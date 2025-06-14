@@ -1,5 +1,15 @@
 <?php
 function ave_contact_form_shortcode() {
+
+	
+    // Enqueue CSS
+    wp_enqueue_style(
+        'aveforms-css',
+        plugins_url('../assets/css/aveforms.css', __FILE__),
+        [],
+        null
+    );
+
 	// Enqueue JS only when shortcode is used
     wp_enqueue_script(
         'aveforms-js',
@@ -81,14 +91,26 @@ function aveforms_handle_contact_form() {
     $email      = sanitize_email($_POST['email'] ?? '');
     $message    = sanitize_textarea_field($_POST['message'] ?? '');
 
-    // Example: send email (customize as needed)
-    //$to = get_option('admin_email');
-    //$subject = "Contact Form Submission from $first_name $last_name";
-    //$body = "Name: $first_name $last_name\nEmail: $email\nMessage:\n$message";
-    //$headers = ['Content-Type: text/plain; charset=UTF-8'];
+	// if everything is ok, we can send the email
+	if (empty($first_name) || empty($last_name) || empty($email) || empty($message)) {
+		wp_send_json_error('All fields are required.');
+	}
 
-    //wp_mail($to, $subject, $body, $headers);
+	// Validate email
+	if (!is_email($email)) {
+		wp_send_json_error('Invalid email address.');
+	}
+
+	// Prepare email data
+	// Here you can set the email recipient, subject, body and headers
+	// You can also use the WordPress function wp_mail to send the email
+	$to = get_option('admin_email');
+    $subject = "Contact Form Submission from $first_name $last_name";
+    $body = "Name: $first_name $last_name\nEmail: $email\nMessage:\n$message";
+    $headers = ['Content-Type: text/plain; charset=UTF-8'];
+
+    wp_mail($to, $subject, $body, $headers);
 	// For demonstration, we will just return the sanitized data
 	// Send a success response
-    wp_send_json_success('Message sent successfully!' . json_encode(compact('first_name', 'last_name', 'email', 'message')));
+    wp_send_json_success('Message sent successfully!');
 }
