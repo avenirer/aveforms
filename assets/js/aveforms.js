@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('contactform');
+
+    const form = document.getElementById(aveforms_ajax.form_id);
     if (!form) return;
     form.addEventListener('submit', function(event) {
         // Prevent the default form submission
