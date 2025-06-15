@@ -1,7 +1,20 @@
 <?php
-function ave_contact_form_shortcode() {
+function ave_contact_form_shortcode($atts = array(), $content = null, $tag = '') {
 
+	// normalize attribute keys, lowercase
 	
+	$atts = array_change_key_case( (array) $atts, CASE_LOWER );
+
+	// override default attributes with user attributes
+	$params = shortcode_atts(
+		[
+			'title' => 'Contact Form',
+			'description' => 'Please fill out the form below to contact us.',
+			'form_id' => 'aveforms_contact_form',
+			'form_class' => 'aveforms',
+			'button_text' => 'Send Message',
+		], $atts, $tag
+	);
     // Enqueue CSS
     wp_enqueue_style(
         'aveforms-css',
@@ -30,45 +43,19 @@ function ave_contact_form_shortcode() {
 			'in_footer' => true,
 		]
     );
+	
     // Pass ajax_url to JS
     wp_localize_script('aveforms-js', 'aveforms_ajax', array(
-        'ajax_url' => esc_url(admin_url('admin-ajax.php'))
+        'ajax_url' => esc_url(admin_url('admin-ajax.php')),
+		'form_id' => $params['form_id'],
+		'form_class' => $params['form_class'],
     ));
 	ob_start();
-	?>
-		<h2>Contact Form</h2>
-		<form id="contactform" class="aveforms" method="post" action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>">   
-			<label for="first_name">First Name:</label>
-			<input type="text" id="first_name" name="first_name" placeholder="First Name" required />
-
-			<label for="last_name">Last Name:</label>
-			<input type="text" id="last_name" name="last_name" placeholder="Last Name" required />
-
-			<label for="email">Email:</label>
-			<input type="email" id="email" name="email" placeholder="email@email.com" required>
-
-			<label for="message">Message:</label>
-			<textarea rows="3" id="message" name="message" placeholder="Type your message here" required></textarea>
-
-			<input id="aveformssubmit" type="submit" value="Send message" class="aveforms-submit">
-			<?php
-			// We need to add a nonce in order to verify that the request is coming from our form
-			// This is a security measure to prevent CSRF attacks
-			// We will use the wordpress function wp_create_nonce to generate a nonce
-			// and we will later verify it in the aveforms_handle_contact_form function ?>
-			<input type="hidden" name="nonce" value="<?php echo wp_create_nonce('aveforms_contact_form_nonce'); ?>">
-			<?php
-			// This is the action that will be triggered when the form is submitted
-			// It will be handled by the aveforms_handle_contact_form function ?>
-			<input type="hidden" name="action" value="aveforms_contact_form">
-			<?php
-			// This is the status div where we will display the response from the server ?>
-			<div id="status" class="status"></div>
-		</form>
-	<?php
+	include plugin_dir_path(__FILE__) . 'contact-form.php';
 	return ob_get_clean();
 	
 }
+
 add_shortcode('aveform', 'ave_contact_form_shortcode');
 
 add_action('wp_ajax_aveforms_contact_form', 'aveforms_handle_contact_form');
