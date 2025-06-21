@@ -38,7 +38,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 statusDiv.innerText = data.data;
                 form.reset();
             } else {
-                statusDiv.innerText = data.data || 'Error sending message.';
+                const responseData = data.data || 'An error occurred.';
+                // if the response is not successful and data.data is a string, display it
+                if (typeof responseData === 'string') {
+                    statusDiv.innerText = responseData;
+                }
+                // else if responseData is an object, display the error message
+                else if (typeof responseData === 'object') {
+                    for (const [key, errors] of Object.entries(responseData)) {
+                        const input = form.querySelector(`[name="${key}"]`);
+                        if (input) {
+                            for (const [errorType, errorMessage] of Object.entries(errors)) {
+                                const errorDiv = document.createElement('div');
+                                errorDiv.className = 'error-message';
+                                errorDiv.innerText = errorMessage;
+                                input.parentNode.insertBefore(errorDiv, input.nextSibling);
+                            };
+                            
+                        }
+                    }
+                    statusDiv.innerText = 'Please, fix the errors above.';
+                } else {
+                    // Fallback message if data.data is not a string or array
+                    statusDiv.innerText = 'An error occurred.';
+                }
             }
         })
         .catch(error => {
