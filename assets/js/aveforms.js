@@ -17,6 +17,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const statusDiv = document.getElementById('status');
         statusDiv.innerText = 'Sending...';
 
+        // Remove any previous error messages
+        const errorMessages = form.querySelectorAll('.error-message');
+        errorMessages.forEach(function(errorMessage) {
+            errorMessage.remove();
+        });
+
         // Deactivate the submit button to prevent multiple submissions
         const submitButton = form.querySelector('button[type="submit"]');
         if (submitButton) {

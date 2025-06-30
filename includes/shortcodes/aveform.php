@@ -12,7 +12,8 @@ function aveform_shortcode($atts = array(), $content = null, $tag = '') {
 			'description' => 'Please fill out the form below to contact us.',
 			'form_id' => 'aveforms_contact_form',
 			'form_class' => 'aveforms',
-			'button_text' => 'Send Message',
+			'success_message' => 'Form submitted successfully!',
+			'error_message' => 'There was an error submitting the form. Please try again.',
 		], $atts, $tag
 	);
     // Enqueue CSS
@@ -55,8 +56,7 @@ function aveform_shortcode($atts = array(), $content = null, $tag = '') {
 		echo '<h2 class="aveforms-title">' . $params['title'] . '</h2>';
 		echo '<div class="aveforms-description">' . $params['description'] . '</div>';
 			echo '<form id="' . $params['form_id'] . '" class="' . $params['form_class'] . '" method="post" action="' . esc_url( admin_url( 'admin-ajax.php' ) ) . '">';
-				echo $content;
-				echo '<input id="aveformssubmit" type="submit" value="' . $params['button_text'] . '" class="aveforms-submit">';
+				echo do_shortcode($content);
 				echo '<input type="hidden" name="nonce" value="' . wp_create_nonce('aveforms_contact_form_nonce') . '">';
 				echo '<input type="hidden" name="action" value="aveforms_contact_form">';
 				echo '<div id="status" class="status"></div>';
