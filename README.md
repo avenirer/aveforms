@@ -1,6 +1,3 @@
-# README.md
-// filepath: c:\Users\adria\Local Sites\learning\app\public\wp-content\plugins\aveforms\README.md
-
 # AveForms Plugin
 
 AveForms is a WordPress plugin for creating and managing custom contact forms using shortcodes and a custom post type.
